@@ -1,0 +1,192 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Service/Servers/Apache/setup/setupWebClient.service.ts</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Database</h2><h3>Classes / services</h3><ul><li><a href="DatabaseService.html">DatabaseService</a></li><li><a href="LogRequestService.html">LogRequestService</a></li><li><a href="ServerConfigService.html">ServerConfigService</a></li><li><a href="WebClientService.html">WebClientService</a></li></ul><h3>Interfaces / models</h3><ul><li><a href="ILogRequestEntity.html">ILogRequestEntity</a></li><li><a href="IserverConfigEntity.html">IserverConfigEntity</a></li></ul></div><div class="category"><h2>Service</h2><h3>Classes / Apache</h3><ul><li><a href="ApacheHelper.html">ApacheHelper</a></li><li><a href="ApacheSetupServer.html">ApacheSetupServer</a></li><li><a href="ApacheUnInstallServer.html">ApacheUnInstallServer</a></li><li><a href="ApacheUnInstallWebClient.html">ApacheUnInstallWebClient</a></li><li><a href="SetupWebClient.html">SetupWebClient</a></li></ul><h3>Classes / Logger</h3><ul><li><a href="LogTracker.html">LogTracker</a></li></ul><h3>Classes / Socket</h3><ul><li><a href="SocketIo.html">SocketIo</a></li></ul><h3>Interfaces / Apache</h3><ul><li><a href="IServerSetup.html">IServerSetup</a></li><li><a href="IUniInstallSetup.html">IUniInstallSetup</a></li><li><a href="IUnInstallWebClient.html">IUnInstallWebClient</a></li><li><a href="IWebClientSetup.html">IWebClientSetup</a></li></ul><h3>Interfaces / Logger</h3><ul><li><a href="IsocketData.html">IsocketData</a></li></ul></div><div class="category"><h2>Utils</h2><h3>Classes</h3><ul><li><a href="FileHelper.html">FileHelper</a></li><li><a href="ToolsHelper.html">ToolsHelper</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>Service/Servers/Apache/setup/setupWebClient.service.ts</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { FileHelper } from "../../../../Utils/File.helper";
+import { inject, injectable } from "inversify";
+import TYPES from "../../../../Config/types";
+import * as constant  from "../config/apache.const";
+import { IWebClientSetup } from "../../interfaces/IWebClientSetup";
+import { IwebConfigEntity } from "../../../../Database/models/WebClient";
+import { logger } from "../../../../Config/log.winston";
+import { ApacheHelper } from "../config/apacheHelper";
+import { ToolsHelper } from "../../../../Utils/Tools.helper";
+import { EXTENSION_LOG, SERVER_END_VH } from "../../../../Config/Constant";
+import { IserverConfigEntity } from "../../../../Database/models/ServerConfig";
+import { EditFile, WRITE_POSITION } from "../../../../Utils/config/EditFile";
+
+/**
+ * @classdesc SetupWebClient is a service respansible of setup a webClient related to apache server
+ * @category Service 
+ * @subcategory  Apache 
+ */
+@injectable()
+export class SetupWebClient implements IWebClientSetup {
+    
+    constructor() {}
+
+    run(webClient:IwebConfigEntity):any {
+       try {
+        webClient.is_configured = false; 
+        const server:IserverConfigEntity   = webClient.server as IserverConfigEntity  ;
+        webClient.conf_tracker_file  = this.setupFileConfigWebClient(server.folder_config_tracker,webClient.server_name,webClient.path_log_folder);
+        if(!webClient.conf_tracker_file || webClient.conf_tracker_file == "false") {
+            webClient.conf_tracker_file = "";
+            return webClient;
+        }
+            
+       const  isSetup = this.setupVirtualHost(webClient.virtual_host_file,webClient.server_name+"",ApacheHelper.addIncludeToLine(webClient.conf_tracker_file,constant.STARTED_TAG+webClient.server_name));
+       if(!isSetup || isSetup == "false") return webClient;
+ 
+       if(!FileHelper.isFileExist(webClient.path_log_folder)) return webClient;
+       
+       webClient.logFile = ToolsHelper.concactFolderWFile(webClient.path_log_folder,webClient.server_name+EXTENSION_LOG);
+       
+        webClient.is_configured = true ;
+        return webClient;
+       } catch (error) {
+        logger.log({
+            level: 'error',
+            message: 'Error raise in webClient setup mode!!' ,
+            additional: error,
+          });
+        return false;  
+       }
+    }
+    
+    /**
+     * @param  {} pathTrackerFolder path of tracker folder
+     * @param  {string} ServerName server name
+     * @param  {string} pathLogFolder path of the log folder 
+     * @returns any
+     */
+    setupFileConfigWebClient(pathTrackerFolder="",ServerName:string,pathLogFolder:string):any{
+       return FileHelper.createAndWriteInFile(ToolsHelper.concactFolderWFile(pathTrackerFolder,ServerName + constant.EXSENTION_CONF)
+        ,ApacheHelper.getTextLog(pathLogFolder,ServerName));
+    } 
+    
+    /**
+     * this function is to include config webclient file to VirtualHost config file
+     * @param  {string} pathfile path of VirtualHost config
+     * @param  {string} serverName servername
+     * @param  {} text="" include statement
+     * @returns any
+     */
+    setupVirtualHost(pathfile:string,serverName:string,text = ""):any{
+        const args:EditFile={pathfile,serverName,text,searchON:SERVER_END_VH.APACHE,isTextExist:true,tagSearch:constant.STARTED_TAG+serverName,position:WRITE_POSITION.UP_LINE}
+        return  FileHelper.editFileSync(args);
+    } 
+
+
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

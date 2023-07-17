@@ -1,0 +1,14 @@
+{
+    "DbConfig" : {
+        "mongo_server":"mongodb://localhost:27017",
+        "mongo_database":"tracker"
+    },
+    "Logs" : {
+       "error_log":"logs/error.log",
+       "info_log":"logs/info.log"
+    },
+    "Socket" : {
+        "server":"http://localhost:3000",
+        "serverEvent":"ria"
+     }
+}

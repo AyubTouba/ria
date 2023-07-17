@@ -1,0 +1,265 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Service/Logger/LogTracker.ts</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Database</h2><h3>Classes / services</h3><ul><li><a href="DatabaseService.html">DatabaseService</a></li><li><a href="LogRequestService.html">LogRequestService</a></li><li><a href="ServerConfigService.html">ServerConfigService</a></li><li><a href="WebClientService.html">WebClientService</a></li></ul><h3>Interfaces / models</h3><ul><li><a href="ILogRequestEntity.html">ILogRequestEntity</a></li><li><a href="IserverConfigEntity.html">IserverConfigEntity</a></li></ul></div><div class="category"><h2>Service</h2><h3>Classes / Apache</h3><ul><li><a href="ApacheHelper.html">ApacheHelper</a></li><li><a href="ApacheSetupServer.html">ApacheSetupServer</a></li><li><a href="ApacheUnInstallServer.html">ApacheUnInstallServer</a></li><li><a href="ApacheUnInstallWebClient.html">ApacheUnInstallWebClient</a></li><li><a href="SetupWebClient.html">SetupWebClient</a></li></ul><h3>Classes / Logger</h3><ul><li><a href="LogTracker.html">LogTracker</a></li></ul><h3>Classes / Socket</h3><ul><li><a href="SocketIo.html">SocketIo</a></li></ul><h3>Interfaces / Apache</h3><ul><li><a href="IServerSetup.html">IServerSetup</a></li><li><a href="IUniInstallSetup.html">IUniInstallSetup</a></li><li><a href="IUnInstallWebClient.html">IUnInstallWebClient</a></li><li><a href="IWebClientSetup.html">IWebClientSetup</a></li></ul><h3>Interfaces / Logger</h3><ul><li><a href="IsocketData.html">IsocketData</a></li></ul></div><div class="category"><h2>Utils</h2><h3>Classes</h3><ul><li><a href="FileHelper.html">FileHelper</a></li><li><a href="ToolsHelper.html">ToolsHelper</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>Service/Logger/LogTracker.ts</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { inject, injectable } from "inversify";
+import TYPES from "../../Config/types";
+import { IwebConfig } from "../../Database/models/WebClient";
+import { LogRequestService } from "../../Database/services/LogRequestService";
+import { ObjectID } from "mongodb";
+import * as constant from "../../Config/Constant";
+import { IlogData } from "../../Utils/config/IlogData";
+import { WebClientService } from "../../Database/services/WebClientService";
+import { logger } from "../../Config/log.winston";
+import { FileHelper } from "../../Utils/File.helper";
+import { SocketIo } from "../Socket/Socket";
+import * as config  from "config";
+import { IsocketData } from "./IsocketData";
+
+/**
+ * @classdesc LogTracker is a service respansible of saving logs from files to the MongoDb 
+ * @category Service 
+ * @subcategory  Logger 
+ */
+@injectable()
+export class LogTracker {
+
+  /**
+   * @param  {LogRequestService} privatelogRequestService
+   * @param  {WebClientService} privatewebClientService
+   * @class
+   */
+  constructor(
+    @inject(TYPES.LogRequestService) private logRequestService:
+      LogRequestService,
+    @inject(TYPES.WebClientService) private webClientService: WebClientService,
+  ) {}
+
+  
+  /**
+   *  Log function is to run the LogTracker service
+   */
+  async log()  {
+    const websites = await this.filesTowatch();
+
+        for(const website of websites) 
+        {   
+          
+             this.readFileAddToDatabase(website);
+        }
+      
+  }
+
+   
+  /**
+   * get log files for the web clients who are configured
+   * @returns  Promise&lt;IwebConfig[]>
+   */
+  async filesTowatch() : Promise&lt;IwebConfig[]>  {
+    return  await this.webClientService.getAll({is_configured : true},{lastline:1,logFile:1,_id:1,server:0,workSpace:0});
+    }
+
+
+    
+ 
+  /**
+   * this function add the line read from the log to the logRequest Table 
+   *  with structuring the datalog by @see IlogData
+   * @param  {String} line line read from the log file
+   * @param  {ObjectID} webClientid  ObjectId of the webClient
+   * @returns Promise&lt;void>
+   */
+  async addToDatabase(line: string, webClientid: ObjectID) : Promise&lt;void> {
+
+        try {
+            const data: any = line.split(constant.SEPARATOR_LOGS);
+            let dataLog:any = {} ;
+            let value:any = null;
+            let dataColmun = [];
+              for(const colmun of data) {
+                   dataColmun = colmun.split(constant.SEPARATOR_LOGS_COLMUNS);
+                   value = dataColmun[1] ? dataColmun[1] : "" ;
+                   dataLog[dataColmun[0]] = value;  
+              }
+
+              dataLog = dataLog as IlogData;
+              
+           const result =  await this.logRequestService.create({
+                logs: dataLog,
+                webclient :webClientid
+            });
+          
+           logger.log({
+            level: 'info',
+            message: "Logs added to Database",
+            additional:result,
+          });
+        } catch (error) {
+            logger.log({
+                level: 'error',
+                message: error,
+              });
+        }
+   
+  } 
+
+  /**
+   * 
+   *  This function read log file for the configured webApp line per line 
+   * then add to database by calling @link addToDatabase function.
+   * set the lastline read to the webapp
+   * and finaly send a socket message to API Tracker that thewebclient has a new logrequests
+   * @param {IwebConfig} website
+   */
+  async readFileAddToDatabase(website: IwebConfig) : Promise&lt;false | undefined> {
+   
+    try {
+        if(!FileHelper.isFileExist(website.logFile+""))
+            {
+              logger.log({
+                level: 'warn',
+                message: 'File log doesn\'t exist!!' ,
+              });
+              return false;
+            }
+    const lineReader = require("readline").createInterface({
+      input: require("fs").createReadStream(website.logFile),
+    });
+    let numberLine = 1;
+    const $this = this;
+     lineReader.on("line", async function (line: string)  {
+      if (numberLine > website.lastline) {
+           if(line.trim().length != 0) {
+        
+               $this.addToDatabase(line,website._id);
+           }
+      }
+      numberLine++;
+    }).on('close',async () => {
+            if(numberLine != website.lastline )
+                  await this.webClientService.updateLine(website._id,numberLine-1);
+                  const data:IsocketData= {webClientId:website._id};
+                  SocketIo.setEvent(config.get("Socket.serverEvent"),data);
+      }); 
+   } catch (error) {
+      logger.log({
+                    level: 'error',
+                    message: 'Error raise durring log tracking!!' ,
+                    additional:error
+                  });
+   }
+    
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

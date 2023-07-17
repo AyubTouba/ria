@@ -1,0 +1,192 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Database/services/ServerConfigService.ts</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Database</h2><h3>Classes / services</h3><ul><li><a href="DatabaseService.html">DatabaseService</a></li><li><a href="LogRequestService.html">LogRequestService</a></li><li><a href="ServerConfigService.html">ServerConfigService</a></li><li><a href="WebClientService.html">WebClientService</a></li></ul><h3>Interfaces / models</h3><ul><li><a href="ILogRequestEntity.html">ILogRequestEntity</a></li><li><a href="IserverConfigEntity.html">IserverConfigEntity</a></li></ul></div><div class="category"><h2>Service</h2><h3>Classes / Apache</h3><ul><li><a href="ApacheHelper.html">ApacheHelper</a></li><li><a href="ApacheSetupServer.html">ApacheSetupServer</a></li><li><a href="ApacheUnInstallServer.html">ApacheUnInstallServer</a></li><li><a href="ApacheUnInstallWebClient.html">ApacheUnInstallWebClient</a></li><li><a href="SetupWebClient.html">SetupWebClient</a></li></ul><h3>Classes / Logger</h3><ul><li><a href="LogTracker.html">LogTracker</a></li></ul><h3>Classes / Socket</h3><ul><li><a href="SocketIo.html">SocketIo</a></li></ul><h3>Interfaces / Apache</h3><ul><li><a href="IServerSetup.html">IServerSetup</a></li><li><a href="IUniInstallSetup.html">IUniInstallSetup</a></li><li><a href="IUnInstallWebClient.html">IUnInstallWebClient</a></li><li><a href="IWebClientSetup.html">IWebClientSetup</a></li></ul><h3>Interfaces / Logger</h3><ul><li><a href="IsocketData.html">IsocketData</a></li></ul></div><div class="category"><h2>Utils</h2><h3>Classes</h3><ul><li><a href="FileHelper.html">FileHelper</a></li><li><a href="ToolsHelper.html">ToolsHelper</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>Database/services/ServerConfigService.ts</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as mongoose from 'mongoose';
+import { ObjectID } from 'mongodb';
+import { injectable } from "inversify";
+import ServerConfig, { IserverConfigEntity } from '../models/ServerConfig';
+
+
+/**
+ * @category Database 
+ * @subcategory  services 
+ * @classdesc ServerConfigService is CRUD service of server config Document on mongoDb database   
+ */
+@injectable()
+export class ServerConfigService  {
+    
+   /**
+    * save a server config 
+    * @param  {IserverConfigEntity} serverConfigeData server config data
+    */
+   async create(serverConfigeData :IserverConfigEntity) {
+       const configServer = new ServerConfig({
+           name : serverConfigeData.name,
+           config_file : serverConfigeData.config_file,
+           config_file_tracker : serverConfigeData.config_file_tracker,
+           workSpace:serverConfigeData.workSpace,
+           folder_config:serverConfigeData.folder_config,
+           folder_config_tracker: serverConfigeData.folder_config_tracker,
+           is_configured: serverConfigeData.is_configured,
+           server_type:serverConfigeData.server_type
+       });
+        return await configServer.save();
+    }
+
+    /**
+     * update a serverConfig document 
+     * @param  {ObjectID} id  id of the server config document to edit
+     * @param  {IserverConfigEntity} serverConfigeData  server config data
+     */
+    async update(id:ObjectID,serverConfigeData :IserverConfigEntity) {
+        const configServer = await ServerConfig.findById(id);
+        if(!configServer) return;
+
+        configServer.name  = serverConfigeData.name ? serverConfigeData.name :  configServer.name ;
+        configServer.config_file = serverConfigeData.config_file ? serverConfigeData.config_file :  configServer.config_file ;
+        configServer.config_file_tracker = serverConfigeData.config_file_tracker ? serverConfigeData.config_file_tracker :  configServer.config_file_tracker ;
+        configServer.workSpace  = serverConfigeData.workSpace ? serverConfigeData.workSpace :  configServer.workSpace ;
+        configServer.folder_config = serverConfigeData.folder_config ? serverConfigeData.folder_config :  configServer.folder_config ;
+        configServer.folder_config_tracker =  serverConfigeData.folder_config_tracker ? serverConfigeData.folder_config_tracker :  configServer.folder_config_tracker ;
+        configServer.is_configured =  serverConfigeData.is_configured ;
+        configServer.is_deleted =  serverConfigeData.is_deleted;
+         return await configServer.save();
+     }
+
+     /**
+     * get All serverConfig
+     * @param  {any} query query to filter the result 
+     */
+    async getAll(query:any= {},select:any = null) {
+         return await ServerConfig.find(query,select).populate('workSpace','-_id -__v -created_at');
+     }
+
+     /**
+     * get one serverConfig
+     * @param  {any} query query to filter the result 
+     */
+    async getOne(query:any= {}) {
+        return await ServerConfig.findOne(query)
+                              .populate('workSpace','-_id -__v -created_at');
+    }
+
+     /**
+     * delete a serverConfig
+     * @param  {any} query query to specify what to delete 
+     */
+     async remove(query:any) {
+        return await ServerConfig.remove(query);
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

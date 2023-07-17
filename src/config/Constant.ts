@@ -1,0 +1,65 @@
+
+
+export const LOG_FORMAT_NAME = "tracker";
+//separators  
+export const SEPARATOR_LOGS="~";
+export const SEPARATOR_LOGS_COLMUNS="|";
+export const FILE_SEPARATOR="/";
+
+//extension  
+export const EXTENSION_LOG=".log";
+
+//SERVERS 
+export enum SERVERS_TYPE {
+  APACHE = "apache",
+  NGINX  = "ngnix"
+}
+
+export const SERVERS_TYPE_ARRAY =  ['apache','ngnix']
+
+export enum SERVER_END_VH {
+  APACHE = "</VirtualHost>",
+  NGINX  = "server_name",
+}
+
+export enum LOG_DATA_VALUES {
+    REMOTE_HOSTNAME = 0,
+    REMOTE_LOGNAME = 1,
+    REMOTE_USER = 2,
+    TIME_REQUEST = 3,
+    FIRST_LINE_OF_REQUEST = 4,
+    FINAL_STATUS = 5,
+    SIZE_OF_RESPONSE_BYTES = 6,
+    REFERER = 7,
+    USER_AGENT=8,
+    IP_LOCAL=9,
+    TIME_SERVIR_REQUEST=10,
+    REQUEST_METHOD=11,
+    QUERY_REQUEST=12,
+    BYTES_RECEIVED=13,
+    BYTES_SENT=14,
+  }
+
+ export enum LOG_DATA_KEY {
+    REMOTE_HOSTNAME = "REMOTE_HOSTNAME",
+    REMOTE_LOGNAME = "REMOTE_LOGNAME",
+    REMOTE_USER = "REMOTE_USER",
+    TIME_REQUEST = "TIME_REQUEST",
+    FIRST_LINE_OF_REQUEST = "FIRST_LINE_OF_REQUEST",
+    FINAL_STATUS = "FINAL_STATUS",
+    SIZE_OF_RESPONSE_BYTES = "SIZE_OF_RESPONSE_BYTES",
+    REFERER="REFERER",
+    USER_AGENT="USER_AGENT",
+    IP_LOCAL="IP_LOCAL",
+    TIME_SERVIR_REQUEST = "TIME_SERVIR_REQUEST",
+    REQUEST_METHOD ="REQUEST_METHOD",
+    QUERY_REQUEST="QUERY_REQUEST",
+    BYTES_RECEIVED="BYTES_RECEIVED",
+    BYTES_SENT="BYTES_SENT"
+  }
+
+export enum CRON_DELAY {
+  EXECUTE_EVERY_10_SECONDS = '*/10 * * * * *',
+  EXECUTE_EVERY_5_SECONDS = "*/5 * * * * *",
+  EXECUTE_EVERY_MINUTE = '0 */1 * * * *',
+}

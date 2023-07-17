@@ -1,0 +1,36 @@
+const TYPES = {
+    DatabaseService: Symbol('DatabaseService'),
+    Application: Symbol('Application'),
+    ServerConfigService: Symbol('ServerConfigService'),
+    WorkSpaceService: Symbol('WorkSpaceService'),
+    WebClientService: Symbol('WebClientService'),
+    LogRequestService: Symbol('LogRequestService'),
+    IWORKER: Symbol('Iworker'),
+    LogsWorker: Symbol('LogsWorker'),
+    LogTracker:Symbol('LogTracker'),
+    ServerSetupApache:Symbol('IServerSetup'),
+    Servers:Symbol('Servers'),
+    SetupServerWorker:Symbol('SetupServerWorker'),
+    SetupWebClient:Symbol('SetupWebClient'),
+    WebClients:Symbol('WebClients'),
+    SetupWebClientWorker:Symbol('SetupWebClientWorker'),
+    ApacheUnInstallServer:Symbol('ApacheUnInstallServer'),
+    IUniInstallSetup:Symbol('IUniInstallSetup'),
+    UnInstallServerWorker:Symbol('UnInstallServerWorker'),
+    UnInstallServer:Symbol('UnInstallServer'),
+    IUnInstallWebClient:Symbol('IUnInstallWebClient'),
+    UnInstallWebClients:Symbol('UnInstallWebClients'),
+    UnInstallWebClientWorker:Symbol('UnInstallWebClientWorker'),
+    NginxSetupServer:Symbol('NginxSetupServer'),
+    NginxSetupWebClient:Symbol('NginxSetupWebClient'),
+    NginxUnInstallWebClient:Symbol('NginxUnInstallWebClient'),
+    NginxUnInstallServer:Symbol('NginxUnInstallServer'),
+    SocketIo:Symbol('SocketIo'),
+    //Commands TYPE:
+    WebClientCommand:Symbol('WebClientCommand'),
+    ServerCommand:Symbol('ServerCommand'),
+    WorkSpaceCommand:Symbol('WorkSpaceCommand'),
+    Commander:Symbol('Commander')
+};
+
+export default TYPES;

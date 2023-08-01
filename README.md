@@ -11,7 +11,7 @@ To install and set up RIA, follow these steps:
 1. Clone the RIA project repository :
 
 ```bash
-  git clone https://github.com/your-username/ria-project.git
+  git clone https://github.com/AyubTouba/ria.git
 ```
 
 1. Change to the project directory::

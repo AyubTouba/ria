@@ -21,6 +21,7 @@
     "@types/jest": "^26.0.13",
     "@types/mongoose": "^5.7.36",
     "@types/socket.io-client": "^1.4.34",
+    "bcrypt": "^5.1.0",
     "chalk": "^4.1.0",
     "commander": "^7.0.0",
     "config": "^3.3.1",

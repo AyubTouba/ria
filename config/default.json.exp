@@ -10,5 +10,8 @@
     "Socket" : {
         "server":"http://localhost:3000",
         "serverEvent":"ria"
+     },
+    "Crypt": {
+        "hashPass":"sameasapisecretJWT"
      }
 }

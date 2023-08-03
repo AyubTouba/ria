@@ -54,7 +54,7 @@ export class WorkSpaceCommand {
       await this.userService.create({
         username: answers.username,
         password: answers.password,
-        role: ROLES.COMPANY_ADMIN,
+        role: ROLES.WORKSPACE_ADMIN,
         workSpace: workspace._id,
         email: answers.email,
       });

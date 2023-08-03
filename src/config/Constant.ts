@@ -16,7 +16,7 @@ export enum SERVERS_TYPE {
 //SERVERS
 export enum ROLES {
   SUPER_ADMIN = "SuperAdmin",
-  COMPANY_ADMIN = "CompanyAdmin",
+  WORKSPACE_ADMIN = "WorkSpaceAdmin",
   USER = "User",
 }
 export const SERVERS_TYPE_ARRAY = ["apache", "ngnix"];

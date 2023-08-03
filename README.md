@@ -44,7 +44,9 @@ Please refer to the configuration files for more details on available options an
 
 ## Usage (soon)
 
-## Related (soon)
+## Related
+
+[RIA (API REST)](https://github.com/AyubTouba/ria-rest-api.git)
 
 ## License
 
